@@ -57,7 +57,7 @@ func (m *MessagingClient) PublishOnQueue(body []byte, queueName string) error {
 			ContentType: "application/json",
 			Body:        body, // Our JSON body as []byte
 		})
-	fmt.Printf("A message was sent to queue %v: %v", queueName, body)
+	fmt.Printf("A message was sent to queue %v: %v", queueName, string(body))
 	return err
 }
 

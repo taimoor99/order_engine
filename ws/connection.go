@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"order_engine/engine"
 	"order_engine/rabbitmq"
+	"order_engine/types"
 	"sync"
 )
 
@@ -45,7 +46,7 @@ func ConnectionEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	conn = &Conn{c, sync.Mutex{}}
 	count++
-	fmt.Println(count)
+	fmt.Println(count, r.Host, r.Body)
 	go func() {
 		// Recover in case of any panic in websocket. So that the app doesn't crash ===
 		defer func() {
@@ -79,12 +80,12 @@ func NewConnection(conn *websocket.Conn) *Conn {
 
 // SendMessage constructs the message with proper structure to be sent over websocket
 func SendMessage(message []byte) {
-	var order engine.Order
+	var order types.Order
 	// decode the message
 	order.FromJson(message)
 
 	// process the order
-	trades := book.Process(order)
+	trades := book.Process(&order)
 	// send trades to message queue
 	for _, trade := range trades {
 		rawTrade := trade.ToJson()

@@ -5,15 +5,16 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"order_engine/engine"
+	"order_engine/redis"
 	"order_engine/ws"
 )
 
 func main() {
 
+	redicon := redis.NewRedisConnection("redis://localhost:6379")
 	// create the order book
 	book := &engine.OrderBook{
-		BuyOrders:  make([]engine.Order, 0, 100),
-		SellOrders: make([]engine.Order, 0, 100),
+		RedisConn: redicon,
 	}
 
 	ws.InitializeMessaging(book)
