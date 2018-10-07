@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"order_engine/rabbitmq"
 	"order_engine/redis"
 	"order_engine/types"
@@ -19,11 +18,8 @@ type OrderBook struct {
 func (book *OrderBook) addOrder(order *types.Order) {
 	pricePointSetKey := order.GetOBMatchKey()
 
-	err :=  book.AddToPricePointSet(pricePointSetKey, string(order.Price))
+	err := book.AddToPricePointSet(pricePointSetKey, order.Price)
 	if err != nil {
 		return
 	}
-	fmt.Println("order added")
 }
-
-

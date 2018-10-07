@@ -2,7 +2,6 @@ package redis
 
 import (
 	"fmt"
-	"github.com/alicebob/miniredis"
 	"github.com/gomodule/redigo/redis"
 	"strconv"
 )
@@ -13,20 +12,6 @@ type RedisConnection struct {
 
 func NewRedisConnection(uri string) *RedisConnection {
 	c, err := redis.DialURL(uri)
-	if err != nil {
-		panic(err)
-	}
-
-	return &RedisConnection{c}
-}
-
-func NewMiniRedisConnection() *RedisConnection {
-	s, err := miniredis.Run()
-	if err != nil {
-		panic(err)
-	}
-
-	c, err := redis.Dial("tcp", s.Addr())
 	if err != nil {
 		panic(err)
 	}
@@ -116,7 +101,7 @@ func (c *RedisConnection) IncrBy(key string, value int64) (int64, error) {
 // Set sets the value of a key to passed key.
 // Cmd Returns: "OK" if successfull and error
 //Returns error if error occured
-func (c *RedisConnection) Set(key string, value string) error {
+func (c *RedisConnection) Set(key string, value uint64) error {
 	ok, err := redis.String(c.Do("SET", key, value))
 	if err != nil {
 		return err
@@ -126,8 +111,12 @@ func (c *RedisConnection) Set(key string, value string) error {
 	return nil
 }
 
+func (c *RedisConnection) Get(key string) (uint64, error) {
+	return redis.Uint64(c.Do("GET", key))
+}
+
 // ZRangeByLex executes ZRANGEBYLEX expecting []string as return
-func (c *RedisConnection) Get(key string) ([]string, error) {
+func (c *RedisConnection) GetKeys(key string) ([]string, error) {
 	return redis.Strings(c.Do("KEYS", key))
 }
 

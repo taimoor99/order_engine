@@ -2,13 +2,15 @@ package ws
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/streadway/amqp"
 	"net/http"
+	"sync"
+
 	"order_engine/engine"
 	"order_engine/rabbitmq"
 	"order_engine/types"
-	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/streadway/amqp"
 )
 
 const (
@@ -88,11 +90,9 @@ func SendMessage(message []byte) {
 	trades := book.Process(&order)
 	// send trades to message queue
 	for _, trade := range trades {
-		rawTrade := trade.ToJson()
-		fmt.Println("raw trade", string(rawTrade))
 		conn.mu.Lock()
 		defer conn.mu.Unlock()
-		err := conn.WriteJSON(message)
+		err := conn.WriteJSON(trade)
 		if err != nil {
 			conn.Close()
 		}

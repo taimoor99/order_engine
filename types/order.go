@@ -6,11 +6,11 @@ import (
 )
 
 type Order struct {
-	Amount uint64 `json:"amount"`
-	Price  uint64 `json:"price"`
-	BaseID     string `json:"baseid"`
-	TokenID     string `json:"tokenid"`
-	Side   string   `json:"side"`
+	Amount  uint64 `json:"amount"`
+	Price   uint64 `json:"price"`
+	BaseID  string `json:"baseid"`
+	TokenID string `json:"tokenid"`
+	Side    string `json:"side"`
 }
 
 func (order *Order) FromJson(msg []byte) error {
@@ -41,14 +41,7 @@ func (o *Order) GetOBKeys() (ss string) {
 // GetOBMatchKey returns the orderbook price point key
 // aginst which the order needs to be matched
 func (o *Order) GetOBMatchKey() (ss string) {
-	var k string
-	if o.Side == "BUY" {
-		k = "SELL"
-	} else if o.Side == "SELL" {
-		k = "BUY"
-	}
-
-	ss = o.GetKVPrefix() + "::orders::" + k
+	ss = o.GetKVPrefix() + "::orders::" + o.Side
 	return
 }
 
